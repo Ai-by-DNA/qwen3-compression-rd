@@ -1,0 +1,19 @@
+model_name: Qwen/Qwen3-8B
+revision: b968826d9c46dd6066d109eabc6255188de91218
+local_model_path: /workspace/models/Qwen3-8B
+
+python: "3.12.3"
+pytorch: "2.8.0+cu128"
+transformers: "4.55.4"
+datasets: "4.8.5"
+lm_eval: "0.4.12"
+
+dtype: bfloat16
+thinking_mode: false
+seed: 42
+batch_size: 1
+
+hardware:
+  gpu: NVIDIA GeForce RTX 4090
+  vram_mib: 24564
+  driver: "580.159.04"
