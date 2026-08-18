@@ -85,6 +85,7 @@ Two warm-up runs were executed before five measured runs. The reported values be
 | KPI | Baseline Result |
 |---|---:|
 | Average TTFT | 25.16 ms |
+| Average End-to-End Latency | 2666.89 ms |
 | Average Decode Speed | 48.07 tokens/s |
 | Average End-to-End Speed | 48.00 tokens/s |
 | Average Peak VRAM Allocated | 15.29 GiB |
@@ -106,6 +107,8 @@ Two warm-up runs were executed before five measured runs. The reported values be
 - GPU measurements performed with no other GPU workloads running
 
 TTFT (Time To First Token) represents the time between submitting the input and generating the first output token.
+
+End-to-end latency represents the total time from submitting the input until the complete generated response is produced.
 
 Decode speed represents the token generation rate after the first generated token.
 

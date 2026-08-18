@@ -4,6 +4,7 @@ MMLU Accuracy,74.95,%
 GSM8K Flexible Exact Match,81.20,%
 GSM8K Strict Exact Match,75.59,%
 TTFT,25.16,ms
+Average Latency,2666.89,ms
 Decode Speed,48.07,tokens/s
 End-to-End Speed,48.00,tokens/s
 Peak VRAM Allocated,15.29,GiB
