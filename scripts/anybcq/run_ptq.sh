@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Reduce CUDA memory fragmentation on memory-constrained GPUs.
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
+
 ENV_PATH="/workspace/envs/anybcq"
 OFFICIAL_REPO="/workspace/tools/anybcq-official"
 
