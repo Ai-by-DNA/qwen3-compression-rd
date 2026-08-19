@@ -53,7 +53,17 @@ pip install -e .
 
 cd "$OFFICIAL_REPO/anybcq/inference/custom_kernel"
 
-source do_install.sh
+# Ninja is used by the official PyTorch CUDA extension build.
+python -m pip install ninja
+
+# RTX 4090 is Ada (sm_89).
+# Enable the Ada architecture that is commented out upstream.
+sed -i \
+  's/# "-gencode=arch=compute_89,code=sm_89", # Ada/"-gencode=arch=compute_89,code=sm_89", # Ada/' \
+  setup.py
+
+# Build inside the current AnyBCQ environment so setup.py can import torch.
+MAX_JOBS=8 CC=g++ python -m pip install --no-build-isolation .
 
 echo
 echo "=========================================="
