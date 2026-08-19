@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+# RunPod may enable Hugging Face fast transfer globally.
+# Disable it because hf_transfer is not required by this experiment.
+unset HF_HUB_ENABLE_HF_TRANSFER
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
