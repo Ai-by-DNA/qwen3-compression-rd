@@ -1,0 +1,34 @@
+# AnyBCQ configuration for Qwen3-8B
+
+model:
+  name: Qwen/Qwen3-8B
+  revision: b968826d9c46dd6066d109eabc6255188de91218
+  local_path: /workspace/models/Qwen3-8B
+  thinking_mode: false
+
+anybcq:
+  official_repo_path: /workspace/tools/anybcq-official
+
+  # Multi-precision AnyBCQ:
+  # base 2-bit + 2 additional bit-planes -> 2/3/4-bit inference
+  n_bits_w: 2
+  add_bits: 2
+
+  group_size: 128
+  input_prob: 1.0
+  asymmetric: false
+  train_beta: false
+
+calibration:
+  dataset: c4
+  num_samples: 512
+  iters_w: 5000
+
+output:
+  model_dir: /workspace/models/anybcq-qwen3-8b
+  results_dir: /workspace/results/anybcq
+
+experiment:
+  seed: 42
+  batch_size: 1
+  gpu: 0
