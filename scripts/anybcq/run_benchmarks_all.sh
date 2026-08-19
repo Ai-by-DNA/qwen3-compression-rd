@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# RunPod enables this globally, but hf_transfer is not installed.
+unset HF_HUB_ENABLE_HF_TRANSFER
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 MODEL_PATH="/workspace/models/anybcq-qwen3-8b"
