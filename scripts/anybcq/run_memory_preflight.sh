@@ -12,12 +12,12 @@ mkdir -p "$RESULT_DIR"
 
 echo "=========================================="
 echo "AnyBCQ RTX 4090 Memory Preflight"
-echo "512 samples | 5 iterations | BF16"
+echo "256 samples | 5 iterations | BF16"
 echo "=========================================="
 
 SAVE_PATH="$PREFLIGHT_MODEL" \
 CACHE_PATH="$PREFLIGHT_CACHE" \
-NUM_SAMPLES=512 \
+NUM_SAMPLES=256 \
 ITERS_W=5 \
 RECON_DTYPE=bfloat16 \
 bash "$SCRIPT_DIR/run_ptq.sh" \
