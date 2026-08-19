@@ -6,8 +6,8 @@ ENV_PATH="/workspace/envs/anybcq"
 OFFICIAL_REPO="/workspace/tools/anybcq-official"
 
 MODEL_PATH="/workspace/models/Qwen3-8B"
-SAVE_PATH="/workspace/models/anybcq-qwen3-8b"
-CACHE_PATH="/workspace/datasets/anybcq-cache"
+SAVE_PATH="${SAVE_PATH:-/workspace/models/anybcq-qwen3-8b}"
+CACHE_PATH="${CACHE_PATH:-/workspace/datasets/anybcq-cache}"
 
 GPU="${GPU:-0}"
 

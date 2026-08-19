@@ -10,6 +10,8 @@ echo "=========================================="
 
 # Small values ONLY for compatibility testing.
 # These are NOT final experimental settings.
+SAVE_PATH="/workspace/models/anybcq-qwen3-8b-smoke" \
+CACHE_PATH="/workspace/datasets/anybcq-smoke-cache" \
 NUM_SAMPLES=4 \
 ITERS_W=5 \
 bash "$SCRIPT_DIR/run_ptq.sh"
