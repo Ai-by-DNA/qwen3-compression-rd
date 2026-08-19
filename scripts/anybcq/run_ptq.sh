@@ -18,6 +18,7 @@ GPU="${GPU:-0}"
 # They can be reduced later only for a compatibility/smoke test.
 NUM_SAMPLES="${NUM_SAMPLES:-512}"
 ITERS_W="${ITERS_W:-5000}"
+RECON_DTYPE="${RECON_DTYPE:-bfloat16}"
 
 echo "=========================================="
 echo "AnyBCQ PTQ - Qwen3-8B"
@@ -70,6 +71,7 @@ CUDA_VISIBLE_DEVICES="$GPU" python run_clm.py \
   --input_prob 1.0 \
   --asymmetric False \
   --train_beta False \
+  --recon_dtype "$RECON_DTYPE" \
   --output_dir "$SAVE_PATH" \
   --cache_dir "$CACHE_PATH"
 
