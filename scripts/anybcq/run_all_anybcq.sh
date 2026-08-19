@@ -60,7 +60,7 @@ fi
 
 echo
 echo "STEP 3/4: Full AnyBCQ PTQ"
-echo "Calibration: 512 samples"
+echo "Calibration: 256 samples"
 echo "Iterations: 5000"
 
 bash "$SCRIPT_DIR/run_ptq.sh"

@@ -21,7 +21,7 @@ anybcq:
 
 calibration:
   dataset: c4
-  num_samples: 512
+  num_samples: 256
   iters_w: 5000
 
 output:

@@ -16,7 +16,7 @@ GPU="${GPU:-0}"
 
 # Official full PTQ settings.
 # They can be reduced later only for a compatibility/smoke test.
-NUM_SAMPLES="${NUM_SAMPLES:-512}"
+NUM_SAMPLES="${NUM_SAMPLES:-256}"
 ITERS_W="${ITERS_W:-5000}"
 RECON_DTYPE="${RECON_DTYPE:-bfloat16}"
 
