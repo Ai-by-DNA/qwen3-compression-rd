@@ -1,0 +1,4 @@
+Method,Bitwidth,Calibration_Samples,WikiText2_PPL,MMLU_Accuracy,GSM8K_Flexible,GSM8K_Strict,TTFT_ms,Latency_ms,Decode_Tokens_per_s,EndToEnd_Tokens_per_s,Peak_VRAM_GiB,Peak_RAM_GiB,Model_Size_GiB
+AnyBCQ,4,256,10.8231,0.7048,0.6937,0.4049,57.38,2334.06,55.79,54.85,7.00,1.62,6.87
+AnyBCQ,3,256,12.9522,0.6656,0.4564,0.0114,67.03,2371.39,55.11,53.98,7.00,1.63,6.87
+AnyBCQ,2,256,40.9711,0.3375,0.0227,0.0000,58.28,2364.40,55.07,54.14,7.00,1.61,6.87
