@@ -1,0 +1,39 @@
+# TurboQuant configuration for Qwen3-8B
+
+model:
+  name: Qwen/Qwen3-8B
+  revision: b968826d9c46dd6066d109eabc6255188de91218
+  local_path: /workspace/models/Qwen3-8B
+  thinking_mode: false
+  dtype: bfloat16
+
+architecture:
+  model_type: qwen3
+  num_attention_heads: 32
+  num_key_value_heads: 8
+  head_dim: 128
+  max_position_embeddings: 40960
+
+turboquant:
+  bits: 3.0
+  fused_attention: true
+  backend: triton
+  strict_reencode: false
+  hybrid_float_cache: false
+  calibration: false
+
+experiment:
+  seed: 42
+  batch_size: 1
+  warmup_runs: 2
+  measured_runs: 5
+  max_new_tokens: 128
+
+benchmarks:
+  wikitext: true
+  mmlu: true
+  gsm8k: true
+  long_context: true
+
+output:
+  results_dir: /workspace/results/turboquant
