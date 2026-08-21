@@ -1,0 +1,2 @@
+method,bits,seed,ttft_ms,latency_ms,decode_tokens_per_second,end_to_end_tokens_per_second,peak_vram_gib,peak_ram_gib,model_size_gib,context_2048_tq_resident_gib,context_4096_tq_resident_gib,context_8192_status
+TurboQuant KV,3,42,41.80,4867.79,26.32,26.30,15.40,1.77,15.27,1.411,2.821,OOM

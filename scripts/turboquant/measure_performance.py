@@ -9,7 +9,7 @@ import psutil
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers.generation.streamers import BaseStreamer
-from turboquant import TurboQuantModel
+from turboquant import TurboQuantModel, TurboQuantProd
 
 os.environ.pop("HF_HUB_ENABLE_HF_TRANSFER", None)
 
@@ -104,12 +104,17 @@ def main():
         )
     )
 
-    wrapper = TurboQuantModel(
-        model,
+    quantizer = TurboQuantProd(
         bits=BITS,
         head_dim=head_dim,
         device="cuda",
+        seed=SEED,
         dtype=torch.bfloat16,
+    )
+
+    wrapper = TurboQuantModel(
+        model,
+        quantizer=quantizer,
     )
 
     wrapper.enable_decoder_fused_attention(architecture="auto")
