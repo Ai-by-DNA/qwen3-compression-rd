@@ -20,7 +20,7 @@ echo
 echo "1/3 - WikiText-2 full AWQ"
 echo "=========================================="
 
-lm-eval run \
+PYTHONPATH=/root/awq-lm-eval python -m lm_eval run \
   --model hf \
   --model_args pretrained="$MODEL_PATH",max_length=2048 \
   --tasks wikitext \
@@ -34,7 +34,7 @@ echo "=========================================="
 echo "2/3 - MMLU full AWQ"
 echo "=========================================="
 
-lm-eval run \
+PYTHONPATH=/root/awq-lm-eval python -m lm_eval run \
   --model hf \
   --model_args pretrained="$MODEL_PATH",max_length=2048 \
   --tasks mmlu \
@@ -50,7 +50,7 @@ echo "=========================================="
 echo "3/3 - GSM8K full AWQ"
 echo "=========================================="
 
-lm-eval run \
+PYTHONPATH=/root/awq-lm-eval python -m lm_eval run \
   --model hf \
   --model_args pretrained="$MODEL_PATH",enable_thinking=False \
   --tasks gsm8k \
