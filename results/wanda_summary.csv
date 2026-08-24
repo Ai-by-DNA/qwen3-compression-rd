@@ -1,14 +1,2 @@
-KPI,Value,Unit
-WikiText-2 PPL,19.5449,
-MMLU Accuracy,63.43,%
-GSM8K Flexible Exact Match,69.07,%
-GSM8K Strict Exact Match,34.50,%
-TTFT,25.18,ms
-Average Latency,2658.45,ms
-Decode Speed,48.23,tokens/s
-End-to-End Speed,48.15,tokens/s
-Peak VRAM Allocated,15.29,GiB
-Peak VRAM Reserved,15.45,GiB
-Peak RAM,1.78,GiB
-Model Directory Size,15.27,GiB
-Weight Size,15.26,GiB
+Method,Sparsity,Calibration_Samples,WikiText2_PPL,MMLU_Accuracy,GSM8K_Flexible,GSM8K_Strict,TTFT_ms,Latency_ms,Decode_Tokens_per_s,EndToEnd_Tokens_per_s,Peak_VRAM_GiB,Peak_RAM_GiB,Model_Size_GiB
+Wanda,0.50,128,19.5449,0.6343,0.6907,0.3450,25.18,2658.45,48.23,48.15,15.29,1.78,15.27
