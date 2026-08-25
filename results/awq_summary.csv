@@ -1,2 +1,2 @@
-Method,Bitwidth,Calibration_Samples,WikiText2_PPL,MMLU_Accuracy,GSM8K_Flexible,GSM8K_Strict,TTFT_ms,Latency_ms,Decode_Tokens_per_s,EndToEnd_Tokens_per_s,Peak_VRAM_GiB,Peak_RAM_GiB,Model_Size_GiB
-AWQ,4,128,14.0275,0.7394,0.8302,0.8059,,831.19,,154.00,,1.68,5.69
+Method,Bitwidth,Quantization,Runtime,Calibration_Samples,Seed,Batch_Size,Input_Tokens,Max_New_Tokens,WikiText2_PPL,MMLU_Accuracy,GSM8K_Flexible,GSM8K_Strict,TTFT_ms,Latency_ms,Decode_Tokens_per_s,EndToEnd_Tokens_per_s,Peak_VRAM_Allocated_GiB,Peak_VRAM_Reserved_GiB,Peak_RAM_GiB,Model_Directory_Size_GiB,Weight_Size_GiB
+AWQ,4,W4A16_ASYM,Hugging Face Transformers,128,42,1,56,128,14.0275,0.7394,0.8302,0.8059,25.79,2676.37,47.91,47.83,15.44,16.12,1.74,5.69,5.68

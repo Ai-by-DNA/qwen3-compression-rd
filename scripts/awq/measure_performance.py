@@ -7,13 +7,11 @@ from pathlib import Path
 
 import psutil
 import torch
-
-from transformers import AutoTokenizer
-from vllm import LLM, SamplingParams
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 MODEL_PATH = "/workspace/models/Qwen3-8B-AWQ"
-RESULT_PATH = "/workspace/results/awq/performance.json"
+RESULT_PATH = "/workspace/results/awq/performance_hf.json"
 
 SEED = 42
 WARMUP_RUNS = 2
@@ -74,7 +72,6 @@ class RAMMonitor:
             target=self._monitor,
             daemon=True,
         )
-
         self.thread.start()
 
     def stop(self):
@@ -91,12 +88,45 @@ class RAMMonitor:
         return self.peak_rss
 
 
+# ---------------------------------------------------------
+# Reproducibility
+# ---------------------------------------------------------
+
+torch.manual_seed(SEED)
+torch.cuda.manual_seed_all(SEED)
+
+
+# ---------------------------------------------------------
+# Load tokenizer
+# ---------------------------------------------------------
+
 print("Loading tokenizer...")
 
 tokenizer = AutoTokenizer.from_pretrained(
     MODEL_PATH,
     local_files_only=True,
 )
+
+
+# ---------------------------------------------------------
+# Load AWQ with Hugging Face
+# ---------------------------------------------------------
+
+print("Loading AWQ model with Hugging Face Transformers...")
+
+model = AutoModelForCausalLM.from_pretrained(
+    MODEL_PATH,
+    device_map={"": "cuda:0"},
+    local_files_only=True,
+    trust_remote_code=True,
+)
+
+model.eval()
+
+
+# ---------------------------------------------------------
+# Prepare prompt
+# ---------------------------------------------------------
 
 messages = [
     {
@@ -112,95 +142,92 @@ formatted_prompt = tokenizer.apply_chat_template(
     enable_thinking=False,
 )
 
-input_tokens = len(
-    tokenizer(
-        formatted_prompt,
-        add_special_tokens=False,
-    )["input_ids"]
+inputs = tokenizer(
+    formatted_prompt,
+    return_tensors="pt",
+    add_special_tokens=False,
 )
 
-print("Loading AWQ model with vLLM...")
+inputs = {
+    key: value.to("cuda:0")
+    for key, value in inputs.items()
+}
 
-llm = LLM(
-    model=MODEL_PATH,
-    trust_remote_code=True,
-    seed=SEED,
-    max_model_len=2048,
-)
+input_tokens = inputs["input_ids"].shape[-1]
 
-sampling_params = SamplingParams(
-    temperature=0.0,
-    max_tokens=MAX_NEW_TOKENS,
-)
+print(f"Input tokens: {input_tokens}")
 
 
-def run_once(measure=True):
-    torch.cuda.empty_cache()
-    torch.cuda.synchronize()
+# ---------------------------------------------------------
+# Generation helpers
+# ---------------------------------------------------------
 
-    if measure:
-        torch.cuda.reset_peak_memory_stats()
-
-    ram_monitor = RAMMonitor()
-
-    if measure:
-        ram_monitor.start()
+@torch.inference_mode()
+def generate_one_token():
+    """
+    Used for TTFT measurement.
+    """
 
     torch.cuda.synchronize()
     start_time = time.perf_counter()
 
-    outputs = llm.generate(
-        [formatted_prompt],
-        sampling_params,
-        use_tqdm=False,
+    model.generate(
+        **inputs,
+        max_new_tokens=1,
+        do_sample=False,
+        use_cache=True,
     )
 
     torch.cuda.synchronize()
     end_time = time.perf_counter()
 
-    if measure:
-        peak_ram = ram_monitor.stop()
-    else:
-        peak_ram = None
+    return end_time - start_time
 
-    output = outputs[0]
-    generated_tokens = len(output.outputs[0].token_ids)
 
-    if not measure:
-        return None
+@torch.inference_mode()
+def generate_full():
+    """
+    Full generation for end-to-end latency.
+    """
 
-    total_latency = end_time - start_time
+    torch.cuda.synchronize()
+    start_time = time.perf_counter()
 
-    end_to_end_tokens_per_second = (
-        generated_tokens / total_latency
-        if total_latency > 0
-        else 0.0
+    output = model.generate(
+        **inputs,
+        max_new_tokens=MAX_NEW_TOKENS,
+        do_sample=False,
+        use_cache=True,
     )
 
-    peak_vram_allocated = torch.cuda.max_memory_allocated()
-    peak_vram_reserved = torch.cuda.max_memory_reserved()
+    torch.cuda.synchronize()
+    end_time = time.perf_counter()
 
-    return {
-        "total_latency_ms": total_latency * 1000,
-        "generated_tokens": int(generated_tokens),
-        "end_to_end_tokens_per_second":
-            end_to_end_tokens_per_second,
-        "peak_vram_allocated_gib":
-            bytes_to_gib(peak_vram_allocated),
-        "peak_vram_reserved_gib":
-            bytes_to_gib(peak_vram_reserved),
-        "peak_ram_gib":
-            bytes_to_gib(peak_ram),
-    }
+    generated_tokens = (
+        output.shape[-1]
+        - inputs["input_ids"].shape[-1]
+    )
 
+    return end_time - start_time, int(generated_tokens)
+
+
+# ---------------------------------------------------------
+# Warm-up
+# ---------------------------------------------------------
 
 print()
 print(f"Running {WARMUP_RUNS} warm-up runs...")
 
 for i in range(WARMUP_RUNS):
     print(f"Warm-up {i + 1}/{WARMUP_RUNS}")
-    run_once(measure=False)
 
+    generate_one_token()
+    generate_full()
+
+
+# ---------------------------------------------------------
+# Measured runs
+# ---------------------------------------------------------
 
 print()
 print(f"Running {MEASURED_RUNS} measured runs...")
@@ -208,17 +235,101 @@ print(f"Running {MEASURED_RUNS} measured runs...")
 runs = []
 
 for i in range(MEASURED_RUNS):
-    result = run_once(measure=True)
+
+    torch.cuda.empty_cache()
+    torch.cuda.synchronize()
+    torch.cuda.reset_peak_memory_stats()
+
+    ram_monitor = RAMMonitor()
+    ram_monitor.start()
+
+    # -------------------------
+    # TTFT
+    # -------------------------
+
+    ttft_seconds = generate_one_token()
+
+    # -------------------------
+    # Full generation
+    # -------------------------
+
+    total_latency_seconds, generated_tokens = generate_full()
+
+    peak_ram = ram_monitor.stop()
+
+    # -------------------------
+    # Speed calculations
+    # -------------------------
+
+    end_to_end_tokens_per_second = (
+        generated_tokens / total_latency_seconds
+        if total_latency_seconds > 0
+        else 0.0
+    )
+
+    decode_tokens = max(generated_tokens - 1, 0)
+
+    decode_time_seconds = max(
+        total_latency_seconds - ttft_seconds,
+        0.0,
+    )
+
+    decode_tokens_per_second = (
+        decode_tokens / decode_time_seconds
+        if decode_time_seconds > 0
+        else 0.0
+    )
+
+    peak_vram_allocated = (
+        torch.cuda.max_memory_allocated()
+    )
+
+    peak_vram_reserved = (
+        torch.cuda.max_memory_reserved()
+    )
+
+    result = {
+        "ttft_ms":
+            ttft_seconds * 1000,
+
+        "total_latency_ms":
+            total_latency_seconds * 1000,
+
+        "generated_tokens":
+            generated_tokens,
+
+        "decode_tokens_per_second":
+            decode_tokens_per_second,
+
+        "end_to_end_tokens_per_second":
+            end_to_end_tokens_per_second,
+
+        "peak_vram_allocated_gib":
+            bytes_to_gib(peak_vram_allocated),
+
+        "peak_vram_reserved_gib":
+            bytes_to_gib(peak_vram_reserved),
+
+        "peak_ram_gib":
+            bytes_to_gib(peak_ram),
+    }
+
     runs.append(result)
 
     print(
         f"Run {i + 1}/{MEASURED_RUNS}: "
+        f"TTFT={result['ttft_ms']:.2f} ms | "
         f"Latency={result['total_latency_ms']:.2f} ms | "
-        f"End-to-End={result['end_to_end_tokens_per_second']:.2f} tok/s | "
+        f"Decode={result['decode_tokens_per_second']:.2f} tok/s | "
+        f"E2E={result['end_to_end_tokens_per_second']:.2f} tok/s | "
         f"VRAM={result['peak_vram_allocated_gib']:.2f} GiB | "
         f"RAM={result['peak_ram_gib']:.2f} GiB"
     )
 
+
+# ---------------------------------------------------------
+# Averages
+# ---------------------------------------------------------
 
 def average(metric):
     return statistics.mean(
@@ -231,13 +342,19 @@ summary = {
     "model": "Qwen/Qwen3-8B",
     "model_path": MODEL_PATH,
     "quantization": "W4A16_ASYM",
-    "runtime": "vLLM",
+
+    "runtime": "Hugging Face Transformers",
+
     "thinking_mode": False,
+
     "seed": SEED,
     "batch_size": 1,
+
     "warmup_runs": WARMUP_RUNS,
     "measured_runs": MEASURED_RUNS,
+
     "input_tokens": int(input_tokens),
+
     "max_new_tokens": MAX_NEW_TOKENS,
 
     "model_directory_size_gib":
@@ -251,8 +368,15 @@ summary = {
         ),
 
     "averages": {
+
+        "ttft_ms":
+            average("ttft_ms"),
+
         "total_latency_ms":
             average("total_latency_ms"),
+
+        "decode_tokens_per_second":
+            average("decode_tokens_per_second"),
 
         "end_to_end_tokens_per_second":
             average("end_to_end_tokens_per_second"),
@@ -271,6 +395,10 @@ summary = {
 }
 
 
+# ---------------------------------------------------------
+# Save JSON
+# ---------------------------------------------------------
+
 os.makedirs(
     os.path.dirname(RESULT_PATH),
     exist_ok=True,
@@ -281,6 +409,7 @@ with open(
     "w",
     encoding="utf-8",
 ) as file:
+
     json.dump(
         summary,
         file,
@@ -288,10 +417,19 @@ with open(
     )
 
 
+# ---------------------------------------------------------
+# Final summary
+# ---------------------------------------------------------
+
 print()
 print("==============================================")
-print("Qwen3-8B AWQ PERFORMANCE SUMMARY")
+print("Qwen3-8B AWQ HF PERFORMANCE SUMMARY")
 print("==============================================")
+
+print(
+    f"TTFT: "
+    f"{summary['averages']['ttft_ms']:.2f} ms"
+)
 
 print(
     f"Average latency: "
@@ -299,22 +437,27 @@ print(
 )
 
 print(
-    f"Average end-to-end speed: "
+    f"Decode speed: "
+    f"{summary['averages']['decode_tokens_per_second']:.2f} tokens/s"
+)
+
+print(
+    f"End-to-end speed: "
     f"{summary['averages']['end_to_end_tokens_per_second']:.2f} tokens/s"
 )
 
 print(
-    f"Average peak VRAM allocated: "
+    f"Peak VRAM allocated: "
     f"{summary['averages']['peak_vram_allocated_gib']:.2f} GiB"
 )
 
 print(
-    f"Average peak VRAM reserved: "
+    f"Peak VRAM reserved: "
     f"{summary['averages']['peak_vram_reserved_gib']:.2f} GiB"
 )
 
 print(
-    f"Average peak RAM: "
+    f"Peak RAM: "
     f"{summary['averages']['peak_ram_gib']:.2f} GiB"
 )
 
