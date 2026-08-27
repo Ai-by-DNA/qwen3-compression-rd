@@ -1,0 +1,35 @@
+method: AnyBCQ+Wanda
+
+base_model: Qwen/Qwen3-8B
+input_model: /workspace/models/Qwen3-8B-WANDA
+output_model: /workspace/models/anybcq-wanda-qwen3-8b
+
+pruning:
+  method: Wanda
+  sparsity: 0.50
+
+quantization:
+  method: AnyBCQ
+  calibration_samples: 256
+  iterations: 5000
+  group_size: 128
+  weight_bits: 2
+  additional_bits: 2
+  supported_precisions:
+    - 2
+    - 3
+    - 4
+  reconstruction_dtype: bfloat16
+
+hardware:
+  gpu: NVIDIA GeForce RTX 4090
+
+evaluation:
+  selected_precision: 4
+  datasets:
+    - WikiText-2
+    - C4
+    - MMLU
+    - GSM8K
+
+ptq_runtime_seconds: 12663
