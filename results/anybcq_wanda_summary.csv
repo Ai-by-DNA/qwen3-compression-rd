@@ -1,0 +1,2 @@
+Method,Bitwidth,Calibration_Samples,WikiText2_PPL,C4_PPL,MMLU_Accuracy,GSM8K_Flexible,GSM8K_Strict,TTFT_ms,Latency_ms,Decode_Tokens_per_s,EndToEnd_Tokens_per_s,Peak_VRAM_GiB,Peak_RAM_GiB,Checkpoint_Size_GiB,PTQ_Runtime_s
+AnyBCQ+Wanda,4,256,16.8990,29.2868,0.243911,0.165277,0.091736,57.41,2298.47,56.67,55.69,7.00,1.61,6.87,12663
