@@ -90,3 +90,35 @@ Do not modify the common baseline environment for method-specific dependencies.
 If AWQ, AnyBCQ, TurboQuant, Wanda, or another method requires different or incompatible dependencies, create a separate virtual environment.
 
 Final comparative benchmarks must run sequentially on the same RTX 4090.
+
+## AWQ environment
+
+The AWQ experiment used a separate Python 3.12.3 environment.
+
+Create it with:
+
+    python -m venv /workspace/envs/llm-compressor-env
+    source /workspace/envs/llm-compressor-env/bin/activate
+    pip install -r requirements-awq.txt
+
+Key versions:
+- llmcompressor: 0.13.0
+- PyTorch: 2.13.0
+- Transformers: 5.14.1
+- Datasets: 5.0.1
+
+## Wanda environment
+
+The Wanda experiment used a separate Python 3.12.3 environment.
+
+Create it with:
+
+    python -m venv /workspace/envs/wanda-env
+    source /workspace/envs/wanda-env/bin/activate
+    pip install -r requirements-wanda.txt
+
+Key versions:
+- llmcompressor: 0.13.0
+- PyTorch: 2.13.0
+- Transformers: 5.14.1
+- Datasets: 4.8.5
