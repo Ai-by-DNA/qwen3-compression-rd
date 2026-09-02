@@ -1,0 +1,32 @@
+Loading tokenizer...
+Loading Qwen3-8B Wanda model...
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/399 [00:00<?, ?it/s]Loading weights:   6%|▌         | 23/399 [00:00<00:01, 207.22it/s]Loading weights:  17%|█▋        | 66/399 [00:00<00:01, 327.65it/s]Loading weights:  27%|██▋       | 109/399 [00:00<00:00, 312.89it/s]Loading weights:  39%|███▉      | 155/399 [00:00<00:00, 361.52it/s]Loading weights:  49%|████▉     | 196/399 [00:00<00:00, 364.00it/s]Loading weights:  59%|█████▊    | 234/399 [00:00<00:00, 368.04it/s]Loading weights:  68%|██████▊   | 272/399 [00:00<00:00, 340.82it/s]Loading weights:  77%|███████▋  | 308/399 [00:00<00:00, 345.97it/s]Loading weights:  87%|████████▋ | 347/399 [00:01<00:00, 347.37it/s]Loading weights:  96%|█████████▌| 383/399 [00:01<00:00, 301.39it/s]Loading weights: 100%|██████████| 399/399 [00:01<00:00, 338.36it/s]
+Input tokens: 56
+Max new tokens: 128
+
+Running 2 warm-up runs...
+Warm-up 1/2
+Warm-up 2/2
+
+Running 5 measured runs...
+Run 1/5: TTFT=25.20 ms | Latency=2659.31 ms | Decode=48.21 tok/s | VRAM=15.29 GiB | RAM=1.78 GiB
+Run 2/5: TTFT=25.19 ms | Latency=2658.67 ms | Decode=48.23 tok/s | VRAM=15.29 GiB | RAM=1.78 GiB
+Run 3/5: TTFT=25.21 ms | Latency=2660.73 ms | Decode=48.19 tok/s | VRAM=15.29 GiB | RAM=1.78 GiB
+Run 4/5: TTFT=25.15 ms | Latency=2656.88 ms | Decode=48.26 tok/s | VRAM=15.29 GiB | RAM=1.78 GiB
+Run 5/5: TTFT=25.13 ms | Latency=2656.66 ms | Decode=48.26 tok/s | VRAM=15.29 GiB | RAM=1.78 GiB
+
+==============================================
+Qwen3-8B WANDA PERFORMANCE SUMMARY
+==============================================
+Average TTFT: 25.18 ms
+Average latency: 2658.45 ms
+Average decode speed: 48.23 tokens/s
+Average end-to-end speed: 48.15 tokens/s
+Average peak VRAM allocated: 15.29 GiB
+Average peak VRAM reserved: 15.45 GiB
+Average peak RAM: 1.78 GiB
+Model directory size: 15.27 GiB
+Weight size: 15.26 GiB
+
+Results saved to: /workspace/results/wanda/performance.json
