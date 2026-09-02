@@ -1,2 +1,0 @@
-Method,Sparsity,Calibration_Samples,WikiText2_PPL,MMLU_Accuracy,GSM8K_Flexible,GSM8K_Strict,TTFT_ms,Latency_ms,Decode_Tokens_per_s,EndToEnd_Tokens_per_s,Peak_VRAM_GiB,Peak_RAM_GiB,Model_Size_GiB
-Wanda,0.50,128,19.5449,0.6343,0.6907,0.3450,25.18,2658.45,48.23,48.15,15.29,1.78,15.27
