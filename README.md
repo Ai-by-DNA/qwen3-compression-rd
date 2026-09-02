@@ -1,17 +1,19 @@
 # Qwen3-8B Compression Experiments
- 
+
 > **This is the single README for this project.** It lives on `main` only and is the entry point for anyone arriving from the paper. Feature branches do not carry a duplicate copy of this file.
- 
+
 Companion repository for the paper:
- 
+
 > *Evaluating Weight Quantization, Pruning, and KV-Cache Compression for Qwen3-8B on a Consumer GPU*
- 
-This repository contains the configuration files, scripts, and **summary** results used in that study. It is not a drop-in serving stack. Checkpoints and datasets are **not** stored in git.
- 
-If you want to check a number or reproduce a run, start here. Do not treat `origin/main` as containing every method: the experiments currently live on method-specific branches (see [Repository layout](#repository-layout)).
- 
+
+Repository: https://github.com/Ai-by-DNA/qwen3-compression-rd
+
+This repository contains the configuration files, scripts, summary CSVs, and **raw per-run logs** used in that study. It is not a drop-in serving stack. Checkpoints and datasets are **not** stored in git.
+
+If you want to check a number or reproduce a run, start here. Do not treat `origin/main` as containing every method: the experiments live on method-specific branches (see [Repository layout](#repository-layout)). Cloning `main` alone is not sufficient to reproduce AnyBCQ, AWQ, Wanda, TurboQuant, or the combined configuration.
+
 ## What was evaluated
- 
+
 | Method | Family | Operating point | Branch |
 |---|---|---|---|
 | Baseline | Uncompressed BF16 | Qwen3-8B, thinking off | `main`, `feature/baseline-kpis` |
@@ -20,30 +22,31 @@ If you want to check a number or reproduce a run, start here. Do not treat `orig
 | Wanda | Unstructured pruning | 50% sparsity, WikiText-2-raw-v1, 128 samples | `feature/AWQ-Wanda` |
 | TurboQuant | KV-cache quantization | 3-bit, `hackimov/turboquant-kv`, seed 42 | `feature/turboquant` |
 | AnyBCQ + Wanda | Combined (exploratory) | Wanda 50% then AnyBCQ 4-bit | `feature/anybcq-wanda` |
- 
+
 Related follow-ups (not in the main comparison tables): `feature/sparse-wanda`, `feature/sparse-kernel-wanda`.
- 
+
 Common experimental constants:
- 
+
 - Model: `Qwen/Qwen3-8B`, revision `b968826d9c46dd6066d109eabc6255188de91218`
 - Precision: BF16 weights except AnyBCQ **inference**, which uses the official FP16 runtime
 - Thinking mode: off (`enable_thinking=False`)
 - Seed: 42
 - Batch size: 1
-- Performance Protocol: 2 warm-up runs + 5 measured runs, 128 new tokens, `do_sample=False`
+- Performance protocol: 2 warm-up runs + 5 measured runs, 128 new tokens, `do_sample=False`
 
-## Hardware 
+## Hardware
 
-All reported numbers were measured on a single idle **NVIDIA GeForce RTX 4090** (24, 564 MiB VRAM), NVIDIA driver 580.159.04, 187 GiB system RAM. Peak VRAM, latency, and OOM behaviour will not necessarily transfer to another GPU. 
+All reported numbers were measured on a single idle **NVIDIA GeForce RTX 4090** (24,564 MiB VRAM), NVIDIA driver 580.159.04, 187 GiB system RAM. Peak VRAM, latency, and OOM behaviour will not necessarily transfer to another GPU.
 
 ## Published numbers vs smoke tests
 
 | Use | Location |
 |---|---|
 | Numbers reported in the paper | `results/*_summary.csv` and `reports/*_kpi_report.md` on the method branch |
-| Pipeline smoke tests | subset WikiText / MMLU / GSM8K runs | **Do not** cite these as paper results |
+| Raw per-run logs (five measured runs, quality JSON/logs) | `results/<method>/` on the method branch |
+| Pipeline smoke tests | subset WikiText / MMLU / GSM8K runs. **Do not** cite these as paper results |
 
-A clean reproduction of AnyBCQ post-training quantization and the official AnyBCQ WikiTwxt-2 // MMLU evaluation has been verified against the paper (PPL and MMLU match after rounding). Full AWQ, Wanda, TurboQuant, and GSM8K re-runs were not part of that check.
+A clean reproduction of AnyBCQ post-training quantization and the official AnyBCQ WikiText-2 / MMLU evaluation has been verified against the paper (PPL and MMLU match after rounding). Full AWQ, Wanda, TurboQuant, and GSM8K re-runs were not part of that check.
 
 ## Repository layout
 
@@ -51,19 +54,20 @@ After checking out a method branch:
 
 ```
 configs/    method YAML
-scripts/    setupt, PTQ/pruning, quality, performance
-results/    summary CSV commited to git 
+scripts/    setup, PTQ/pruning, quality, performance
+results/    summary CSVs and raw logs committed to git
 reports/    KPI write-ups (where present)
+patches/    compatibility patches (AnyBCQ+Wanda only)
 ```
 
 Default checkout of `main` currently contains the **baseline** environment lockfile and this README. To work on a method:
 
 ```bash
 git fetch origin
-git checkout feature/anybcq            #example
+git checkout feature/anybcq            # example
 ```
 
-### Pre-method entry points
+### Per-method entry points
 
 | Method | Setup / env | Run | Summary CSV |
 |---|---|---|---|
@@ -72,9 +76,9 @@ git checkout feature/anybcq            #example
 | AWQ | `requirements-awq.txt`, env `llm-compressor-env` | `scripts/awq/run_awq.py` then `scripts/awq/run_awq_all.sh` | `results/awq_summary.csv` |
 | Wanda | `requirements-wanda.txt`, env `wanda-env` | `scripts/wanda/run_wanda.py` then `scripts/wanda/run_wanda_all.sh` | `results/wanda_summary.csv` |
 | TurboQuant | `scripts/turboquant/setup_turboquant.sh` | `scripts/turboquant/run_all_turboquant.sh` | `results/turboquant_summary.csv` |
-| AnyBCQ+Wanda | see [Known limitations](#known-limitations) | **⚠️ DO NOT RUN — not reproducible yet** (see below) | `results/anybcq_wanda_summary.csv` |
+| AnyBCQ+Wanda | official AnyBCQ clone + `patches/anybcq_wanda/anybcq_wanda.patch` | `scripts/anybcq_wanda/run_ptq_wanda_timed.sh` | `results/anybcq_wanda_summary.csv` |
 
-## Software environments 
+## Software environments
 
 Do **not** install every method into one virtualenv. The paper's Table 2 lists the **baseline** stack. Method-specific environments used for the reported runs:
 
@@ -88,14 +92,14 @@ Do **not** install every method into one virtualenv. The paper's Table 2 lists t
 
 Snapshots: `requirements-lock.txt` (baseline, on `main`), `requirements-awq.txt` and `requirements-wanda.txt` (on `feature/AWQ-Wanda`).
 
-### Upstream pins (not yet encoded in all setup scripts)
+### Upstream pins
 
-Setup scripts currently `git clone` without a commit pin. The runs that prosuced the paper numbers used:
+The setup scripts check out the commits used for the paper numbers after cloning:
 
-- AnyBCQ: `c316a4d06fc7714aa6b500b4d607a08ec6fe0b24`
-- TurboQuant KV: `12c38c796a7199c93d232ef197cf213809f91afe`
+- AnyBCQ: `c316a4d06fc7714aa6b500b4d607a08ec6fe0b24` (`scripts/anybcq/setup_anybcq.sh` on `feature/anybcq` and `feature/anybcq-wanda`)
+- TurboQuant KV: `12c38c796a7199c93d232ef197cf213809f91afe` (`scripts/turboquant/setup_turboquant.sh` on `feature/turboquant`)
 
-After cloning those repositories, check out the pinned commit before installing.
+If you clone those upstream repositories by hand, check out the same commits before installing.
 
 ## Paths used in the original runs
 
@@ -107,7 +111,7 @@ The scripts assume a RunPod-style layout. You can keep it or replace the prefixe
 | Models / checkpoints | `/workspace/models` | outside git, e.g. `./models` |
 | Datasets / caches | `/workspace/datasets` | outside git |
 | Virtualenvs | `/workspace/envs` | outside git |
-| Raw logs | `/workspace/results` | outside git; **summary** CSVs are committed |
+| Working result dumps | `/workspace/results` | outside git; **summary CSVs and raw logs used in the paper are committed** on the method branches |
 
 Do not commit model weights or Hugging Face caches.
 
@@ -121,40 +125,41 @@ unset HF_HUB_ENABLE_HF_TRANSFER
 
 No GPU required:
 
- 
 ```bash
 git checkout feature/anybcq
 cat results/anybcq_summary.csv
 cat reports/anybcq_kpi_report.md
 ```
 
+Raw per-run files for that method are under `results/anybcq/`.
+
 ## Reproduce AnyBCQ quality (verified)
 
 Requires an RTX 4090-class GPU, C4 access for PTQ, and several hours for full quantization.
- 
+
 ```bash
 git checkout feature/anybcq
- 
-# Isolated env + official AnyBCQ clone (then: git checkout c316a4d06fc7714aa6b500b4d607a08ec6fe0b24)
+
+# Isolated env + official AnyBCQ clone at c316a4d06fc7714aa6b500b4d607a08ec6fe0b24
 bash scripts/anybcq/setup_anybcq.sh
- 
+
 hf download Qwen/Qwen3-8B \
   --revision b968826d9c46dd6066d109eabc6255188de91218 \
   --local-dir /workspace/models/Qwen3-8B
- 
+
 # Full PTQ: 256 C4 samples, 5000 iterations (about 3.5 hours on RTX 4090)
 bash scripts/anybcq/run_ptq.sh
- 
+
 # Official evaluator: WikiText-2 PPL and MMLU for 2/3/4-bit
 bash scripts/anybcq/run_official_eval.sh
 ```
- 
+
 Expected WikiText-2 PPL / MMLU (paper, 4-decimal / 2-decimal rounding): 10.8231 / 70.48%, 12.9522 / 66.56%, 40.9711 / 33.75%.
- 
+
 GSM8K for AnyBCQ is a **separate** lm-eval path (`scripts/anybcq/evaluate_gsm8k.py`) and uses `is_fp16=False` at load time. Performance figures use the official FP16 inference runtime. Do not assume quality and latency share one dtype.
- 
+
 ## Baseline environment (Table 2 stack)
- 
+
 ```bash
 python -m venv /workspace/envs/qwen3-baseline
 source /workspace/envs/qwen3-baseline/bin/activate
@@ -163,29 +168,30 @@ pip install numpy==2.5.2
 pip install transformers==4.55.4
 pip install "lm_eval[hf]==0.4.12" "datasets==4.8.5"
 # or: pip install -r requirements-lock.txt
- 
+
 hf download Qwen/Qwen3-8B \
   --revision b968826d9c46dd6066d109eabc6255188de91218 \
   --local-dir /workspace/models/Qwen3-8B
 ```
- 
+
 Then, on `feature/baseline-kpis` or a branch that includes `scripts/baseline/`:
- 
+
 ```bash
 bash scripts/baseline/run_quality.sh
 python scripts/baseline/measure_performance.py
 ```
 
-## AWQ and Wanda 
+## AWQ and Wanda
 
 On `feature/AWQ-Wanda`, create **separate** environments from the committed snapshots; do not reuse the baseline env.
- 
+
 ```bash
 git checkout feature/AWQ-Wanda
 # python -m venv ... && pip install -r requirements-awq.txt
 python scripts/awq/run_awq.py
 bash scripts/awq/run_awq_all.sh
 ```
+
 Wanda analogously: `requirements-wanda.txt`, `scripts/wanda/run_wanda.py`, `scripts/wanda/run_wanda_all.sh`.
 
 AWQ and Wanda performance in the paper is **Hugging Face Transformers only**. There is no vLLM measurement in this repository.
@@ -195,11 +201,29 @@ AWQ and Wanda performance in the paper is **Hugging Face Transformers only**. Th
 ```bash
 git checkout feature/turboquant
 bash scripts/turboquant/setup_turboquant.sh
-# After clone: git -C /workspace/tools/turboquant-kv checkout 12c38c796a7199c93d232ef197cf213809f91afe
+# setup checks out 12c38c796a7199c93d232ef197cf213809f91afe
 bash scripts/turboquant/run_all_turboquant.sh
 ```
 
 Quality numbers in the paper are a **small-sample screening** (10 WikiText-2, 5 MMLU abstract_algebra, 5 GSM8K), not a full benchmark. Long-context KV memory is measured by `scripts/turboquant/measure_long_context.py`.
+
+## AnyBCQ + Wanda (combined)
+
+This configuration is reproducible from `feature/anybcq-wanda`, but **not** from official AnyBCQ without the committed patch.
+
+```bash
+git checkout feature/anybcq-wanda
+bash scripts/anybcq/setup_anybcq.sh
+
+# Apply the exact local modifications used for the paper
+# (run_clm.py, data_utils.py, anybcq/evaluate/eval.py,
+#  anybcq/inference/AnyBCQForCausalLM.py)
+git -C /path/to/anybcq apply "$(pwd)/patches/anybcq_wanda/anybcq_wanda.patch"
+
+bash scripts/anybcq_wanda/run_ptq_wanda_timed.sh
+```
+
+See `patches/anybcq_wanda/README.md` on that branch for the upstream commit and apply command. Do not skip the patch.
 
 ## Measurement caveats (same as the paper)
 
@@ -210,20 +234,19 @@ Quality numbers in the paper are a **small-sample screening** (10 WikiText-2, 5 
 
 ## Known limitations
 
-these are gaps in the supplementary package, not hidden experimental results:
+These are remaining constraints of the supplementary package, not hidden experimental results:
 
-1. **Raw per-run logs** (five-run JSON/log files) remain on the original machine. Git mainly has summary CSVs. Appendix claims in the manuscript should match this until the logs are added.
-2. **AnyBCQ+Wanda used local modifications to official AnyBCQ** (`run_clm.py`, `data_utils.py`, `anybcq/evaluate/eval.py`, `anybcq/inference/AnyBCQForCausalLM.py`) that are **not** committed as a patch. **This configuration is not reproducible from this repository yet — do not attempt to run `scripts/anybcq_wanda/run_ptq_wanda_timed.sh` until this notice is removed.**
-3. **Setup scripts** clone AnyBCQ and TurboQuant at `HEAD` unless you check out the pins above.
-4. **Default `main`** does not contain the method pipelines. Check out the branch in the table at the top.
-
+1. **Default `main`** does not contain the method pipelines, raw logs, or patches. Check out the branch in the table at the top (this matches Appendix A.3 of the paper).
+2. **Checkpoints and datasets** are not in git. Reproduction needs a local Qwen3-8B download at the pinned revision and, for AnyBCQ, C4 access.
+3. **AWQ, Wanda, TurboQuant, and GSM8K** were not re-run from a clean clone as part of the AnyBCQ verification; the committed logs are the source of the paper numbers for those methods.
+4. **Follow-up sparse-Wanda branches** are not part of the paper's main tables.
 
 ## License
- 
-*(To be added.)*
- 
+
+Internal R&D companion repository for Ai by DNA. Not an open-source release; contact the authors regarding reuse.
+
 ## Citation
- 
+
 ```bibtex
 @article{qwen3compression,
   title   = {Evaluating Weight Quantization, Pruning, and KV-Cache Compression for Qwen3-8B on a Consumer GPU},
@@ -232,5 +255,5 @@ these are gaps in the supplementary package, not hidden experimental results:
   note    = {Manuscript}
 }
 ```
- 
+
 Replace the `note` field with URL when the paper is published.
