@@ -32,6 +32,7 @@ mkdir -p /workspace/tools
 if [ ! -d "$OFFICIAL_REPO/.git" ]; then
     git clone "$REPO_URL" "$OFFICIAL_REPO"
 fi
+git -C "$OFFICIAL_REPO" checkout 12c38c796a7199c93d232ef197cf213809f91afe
 
 # 4. Install TurboQuant with Hugging Face + Triton support.
 cd "$OFFICIAL_REPO"
