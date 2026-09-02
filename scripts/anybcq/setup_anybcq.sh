@@ -38,6 +38,7 @@ mkdir -p /workspace/tools
 if [ ! -d "$OFFICIAL_REPO/.git" ]; then
     git clone "$OFFICIAL_REPO_URL" "$OFFICIAL_REPO"
 fi
+git -C "$OFFICIAL_REPO" checkout c316a4d06fc7714aa6b500b4d607a08ec6fe0b24
 
 # ------------------------------------------------------------
 # 4. Install official AnyBCQ package and dependencies
