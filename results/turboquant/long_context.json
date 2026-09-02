@@ -1,0 +1,57 @@
+{
+  "model": "Qwen3-8B",
+  "turboquant_bits": 3.0,
+  "dtype": "bfloat16",
+  "measurement": "prefill resident cache memory and prefill peak VRAM",
+  "results": [
+    {
+      "context_tokens": 2048,
+      "plain": {
+        "status": "ok",
+        "prefill_seconds": 1.0959179196506739,
+        "resident_incremental_gib": 0.2891845703125,
+        "peak_incremental_gib": 0.4933013916015625,
+        "total_peak_vram_gib": 15.749829769134521
+      },
+      "turboquant_3bit": {
+        "status": "ok",
+        "prefill_seconds": 0.5997404139488935,
+        "resident_incremental_gib": 1.41064453125,
+        "peak_incremental_gib": 1.6147613525390625,
+        "total_peak_vram_gib": 16.87922430038452
+      },
+      "resident_kv_reduction_percent": -387.8007598142676
+    },
+    {
+      "context_tokens": 4096,
+      "plain": {
+        "status": "ok",
+        "prefill_seconds": 0.4753619134426117,
+        "resident_incremental_gib": 0.5625,
+        "peak_incremental_gib": 0.970733642578125,
+        "total_peak_vram_gib": 17.64587163925171
+      },
+      "turboquant_3bit": {
+        "status": "ok",
+        "prefill_seconds": 0.5961291836574674,
+        "resident_incremental_gib": 2.8212890625,
+        "peak_incremental_gib": 3.229522705078125,
+        "total_peak_vram_gib": 19.90466070175171
+      },
+      "resident_kv_reduction_percent": -401.5625
+    },
+    {
+      "context_tokens": 8192,
+      "plain": {
+        "status": "ok",
+        "prefill_seconds": 1.0078113786876202,
+        "resident_incremental_gib": 1.125,
+        "peak_incremental_gib": 1.94146728515625,
+        "total_peak_vram_gib": 20.02729558944702
+      },
+      "turboquant_3bit": {
+        "status": "oom"
+      }
+    }
+  ]
+}

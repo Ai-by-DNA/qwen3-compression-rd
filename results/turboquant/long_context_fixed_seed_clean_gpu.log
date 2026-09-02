@@ -1,0 +1,30 @@
+Loading weights:   0%|          | 0/399 [00:00<?, ?it/s]Loading weights:  15%|█▍        | 58/399 [00:00<00:00, 540.10it/s]Loading weights:  28%|██▊       | 113/399 [00:00<00:00, 467.25it/s]Loading weights:  40%|████      | 161/399 [00:00<00:00, 401.56it/s]Loading weights:  51%|█████     | 202/399 [00:00<00:00, 396.04it/s]Loading weights:  61%|██████    | 243/399 [00:00<00:00, 382.25it/s]Loading weights:  71%|███████   | 282/399 [00:00<00:00, 358.90it/s]Loading weights:  84%|████████▎ | 334/399 [00:00<00:00, 394.58it/s]Loading weights:  94%|█████████▎| 374/399 [00:00<00:00, 385.79it/s]Loading weights: 100%|██████████| 399/399 [00:00<00:00, 405.42it/s]
+
+===== Context: 2048 tokens =====
+Plain HF KV cache...
+TurboQuant 3-bit KV cache...
+Plain resident incremental: 0.289 GiB
+TurboQuant resident incremental: 1.411 GiB
+Resident reduction: -387.80%
+Plain peak incremental: 0.493 GiB
+TurboQuant peak incremental: 1.615 GiB
+
+===== Context: 4096 tokens =====
+Plain HF KV cache...
+TurboQuant 3-bit KV cache...
+Plain resident incremental: 0.562 GiB
+TurboQuant resident incremental: 2.821 GiB
+Resident reduction: -401.56%
+Plain peak incremental: 0.971 GiB
+TurboQuant peak incremental: 3.230 GiB
+
+===== Context: 8192 tokens =====
+Plain HF KV cache...
+TurboQuant 3-bit KV cache...
+Plain status: ok | TurboQuant status: oom
+TurboQuant reached the GPU memory limit. Stopping larger-context tests.
+
+==========================================
+TurboQuant long-context benchmark finished.
+Results: /workspace/results/turboquant/long_context.json
+==========================================

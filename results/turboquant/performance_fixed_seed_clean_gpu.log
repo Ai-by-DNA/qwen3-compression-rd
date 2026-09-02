@@ -1,0 +1,25 @@
+Loading weights:   0%|          | 0/399 [00:00<?, ?it/s]Loading weights:  19%|█▉        | 77/399 [00:00<00:00, 656.49it/s]Loading weights:  36%|███▌      | 143/399 [00:00<00:00, 364.61it/s]Loading weights:  47%|████▋     | 186/399 [00:00<00:00, 325.30it/s]Loading weights:  56%|█████▋    | 225/399 [00:00<00:00, 335.99it/s]Loading weights:  69%|██████▉   | 277/399 [00:00<00:00, 367.68it/s]Loading weights:  79%|███████▉  | 316/399 [00:00<00:00, 367.93it/s]Loading weights:  89%|████████▉ | 355/399 [00:00<00:00, 370.54it/s]Loading weights: 100%|██████████| 399/399 [00:01<00:00, 379.25it/s]
+TurboQuant: 3-bit KV cache
+Input tokens: 45
+Max new tokens: 128
+
+Running warm-ups...
+Warm-up 1/2
+Warm-up 2/2
+
+Running measured runs...
+Run 1/5: TTFT=42.06 ms | Latency=4896.46 ms | Decode=26.16 tok/s | VRAM=15.40 GiB
+Run 2/5: TTFT=42.01 ms | Latency=4870.33 ms | Decode=26.30 tok/s | VRAM=15.40 GiB
+Run 3/5: TTFT=41.67 ms | Latency=4906.56 ms | Decode=26.11 tok/s | VRAM=15.40 GiB
+Run 4/5: TTFT=41.46 ms | Latency=4833.92 ms | Decode=26.50 tok/s | VRAM=15.40 GiB
+Run 5/5: TTFT=41.82 ms | Latency=4831.65 ms | Decode=26.51 tok/s | VRAM=15.40 GiB
+
+===== TurboQuant PERFORMANCE SUMMARY =====
+TTFT: 41.80 ms
+Latency: 4867.79 ms
+Decode: 26.32 tok/s
+End-to-end: 26.30 tok/s
+Peak VRAM: 15.40 GiB
+Peak RAM: 1.77 GiB
+Model size: 15.27 GiB
+Results: /workspace/results/turboquant/performance.json
