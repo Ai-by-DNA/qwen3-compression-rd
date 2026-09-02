@@ -1,0 +1,113 @@
+diff --git a/anybcq/evaluate/eval.py b/anybcq/evaluate/eval.py
+index f9e3d96..c2e32e3 100644
+--- a/anybcq/evaluate/eval.py
++++ b/anybcq/evaluate/eval.py
+@@ -147,7 +147,7 @@ def auto_model_load(
+     logprint(verbose, "Loading tokenizer and model...")
+ 
+     tokenizer = AutoTokenizer.from_pretrained(model_path)
+-    new_vocab_size = len(tokenizer)
++    new_vocab_size = None  # preserve checkpoint config.vocab_size (Qwen padded/reserved vocab)
+     if is_fp16:
+         model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=dtype,
+                                                       trust_remote_code=True).to(device)
+diff --git a/anybcq/inference/AnyBCQForCausalLM.py b/anybcq/inference/AnyBCQForCausalLM.py
+index 95217f3..7544260 100644
+--- a/anybcq/inference/AnyBCQForCausalLM.py
++++ b/anybcq/inference/AnyBCQForCausalLM.py
+@@ -136,7 +136,7 @@ class AnyBCQForCausalLM(nn.Module):
+     ):
+         config = cls._load_config(quant_model_path, trust_remote_code)
+ 
+-        if getattr(config, "vocab_size", None) != new_vocab_size:
++        if new_vocab_size is not None and getattr(config, "vocab_size", None) != new_vocab_size:
+             config.vocab_size = new_vocab_size
+ 
+         ap_model = cls(
+diff --git a/data_utils.py b/data_utils.py
+index ff2bb57..d936a35 100755
+--- a/data_utils.py
++++ b/data_utils.py
+@@ -1,7 +1,8 @@
++from pathlib import Path
+ # Copyright (c) 2025-present NAVER Cloud Corp.
+ # Copyright 2020 The HuggingFace Inc. team. All rights reserved.
+ 
+-from datasets import load_dataset
++from datasets import load_dataset, Dataset, DatasetDict, concatenate_datasets
+ 
+ def get_dataset(data_args, model_args):
+     if data_args.dataset_name is not None:
+@@ -30,27 +31,37 @@ def get_dataset(data_args, model_args):
+                 )
+ 
+         else:
+-            raw_datasets = load_dataset(
+-                'allenai/c4',
+-                data_files={'train': 'en/c4-train.00000-of-01024.json.gz'},
+-                cache_dir=model_args.cache_dir,
+-                # # use_auth_token=True if model_args.use_auth_token else None,
++            # Wanda + AnyBCQ: reuse the exact cached C4 Arrow data.
++            cache_root = Path(
++                "/workspace/datasets/anybcq-cache/allenai___c4"
+             )
+-            if "validation" not in raw_datasets.keys():
+-                raw_datasets["validation"] = load_dataset(
+-                    'allenai/c4',
+-                    data_files={'validation': 'en/c4-validation.00000-of-00008.json.gz'},
+-                    split=f"validation[:1%]",
+-                    cache_dir=model_args.cache_dir,
+-                    # # use_auth_token=True if model_args.use_auth_token else None,
++
++            train_files = sorted(cache_root.rglob("c4-train-*.arrow"))
++            val_files = sorted(cache_root.rglob("c4-validation.arrow"))
++
++            if len(train_files) != 2:
++                raise RuntimeError(
++                    f"Expected 2 C4 train shards, found {len(train_files)}"
+                 )
+-                raw_datasets["train"] = load_dataset(
+-                    'allenai/c4',
+-                    data_files={'train': 'en/c4-train.00000-of-01024.json.gz'},
+-                    split=f"train[:1%]",
+-                    cache_dir=model_args.cache_dir,
+-                    # # use_auth_token=True if model_args.use_auth_token else None,
++
++            if len(val_files) != 1:
++                raise RuntimeError(
++                    f"Expected 1 C4 validation shard, found {len(val_files)}"
+                 )
++
++            train_full = concatenate_datasets(
++                [Dataset.from_file(str(x)) for x in train_files]
++            )
++            validation_full = Dataset.from_file(str(val_files[0]))
++
++            # Preserve original AnyBCQ train[:1%] / validation[:1%].
++            train_n = max(1, len(train_full) // 100)
++            validation_n = max(1, len(validation_full) // 100)
++
++            raw_datasets = DatasetDict({
++                "train": train_full.select(range(train_n)),
++                "validation": validation_full.select(range(validation_n)),
++            })
+     else:
+         data_files = {}
+         dataset_args = {}
+diff --git a/run_clm.py b/run_clm.py
+index f807ab5..c56fbea 100755
+--- a/run_clm.py
++++ b/run_clm.py
+@@ -205,8 +205,11 @@ def main():
+         n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
+         logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
+     
+-    model.resize_token_embeddings(len(tokenizer))
++    current_vocab_size = model.get_input_embeddings().weight.shape[0]
+     
++    if len(tokenizer) > current_vocab_size:
++    
++        model.resize_token_embeddings(len(tokenizer))
+     print('********************')
+     print('*** PLM is used! ***')
+     print('********************')
