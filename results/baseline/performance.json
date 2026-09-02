@@ -1,0 +1,75 @@
+{
+  "model": "Qwen/Qwen3-8B",
+  "model_path": "/workspace/models/Qwen3-8B",
+  "dtype": "bfloat16",
+  "thinking_mode": false,
+  "seed": 42,
+  "batch_size": 1,
+  "warmup_runs": 2,
+  "measured_runs": 5,
+  "input_tokens": 56,
+  "max_new_tokens": 128,
+  "model_directory_size_gib": 15.271327384747565,
+  "weight_size_gib": 15.256476379930973,
+  "averages": {
+    "ttft_ms": 25.158284418284893,
+    "total_latency_ms": 2666.889646835625,
+    "decode_tokens_per_second": 48.07471670051143,
+    "end_to_end_tokens_per_second": 47.996168853489074,
+    "peak_vram_allocated_gib": 15.292895317077637,
+    "peak_vram_reserved_gib": 15.451171875,
+    "peak_ram_gib": 1.5783554077148438
+  },
+  "runs": [
+    {
+      "ttft_ms": 25.172820314764977,
+      "total_latency_ms": 2660.668723285198,
+      "generated_tokens": 128,
+      "decode_tokens_per_second": 48.188274493942465,
+      "end_to_end_tokens_per_second": 48.108206361728115,
+      "peak_vram_allocated_gib": 15.292895317077637,
+      "peak_vram_reserved_gib": 15.451171875,
+      "peak_ram_gib": 1.5783233642578125
+    },
+    {
+      "ttft_ms": 25.076559744775295,
+      "total_latency_ms": 2662.3077280819416,
+      "generated_tokens": 128,
+      "decode_tokens_per_second": 48.15656720759764,
+      "end_to_end_tokens_per_second": 48.07858935684251,
+      "peak_vram_allocated_gib": 15.292895317077637,
+      "peak_vram_reserved_gib": 15.451171875,
+      "peak_ram_gib": 1.5783615112304688
+    },
+    {
+      "ttft_ms": 25.057504884898663,
+      "total_latency_ms": 2672.723699361086,
+      "generated_tokens": 128,
+      "decode_tokens_per_second": 47.96677174220809,
+      "end_to_end_tokens_per_second": 47.89122049188937,
+      "peak_vram_allocated_gib": 15.292895317077637,
+      "peak_vram_reserved_gib": 15.451171875,
+      "peak_ram_gib": 1.5783615112304688
+    },
+    {
+      "ttft_ms": 25.17527434974909,
+      "total_latency_ms": 2665.5705412849784,
+      "generated_tokens": 128,
+      "decode_tokens_per_second": 48.098859133091835,
+      "end_to_end_tokens_per_second": 48.019738370268634,
+      "peak_vram_allocated_gib": 15.292895317077637,
+      "peak_vram_reserved_gib": 15.451171875,
+      "peak_ram_gib": 1.5783653259277344
+    },
+    {
+      "ttft_ms": 25.309262797236443,
+      "total_latency_ms": 2673.1775421649218,
+      "generated_tokens": 128,
+      "decode_tokens_per_second": 47.96311092571711,
+      "end_to_end_tokens_per_second": 47.88308968671675,
+      "peak_vram_allocated_gib": 15.292895317077637,
+      "peak_vram_reserved_gib": 15.451171875,
+      "peak_ram_gib": 1.5783653259277344
+    }
+  ]
+}

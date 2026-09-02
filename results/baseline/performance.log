@@ -1,0 +1,37 @@
+Loading tokenizer...
+Loading Qwen3-8B baseline...
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:00<00:02,  1.57it/s]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:02,  1.41it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:02<00:01,  1.35it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.41it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.99it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.68it/s]
+Input tokens: 56
+Max new tokens: 128
+
+Running 2 warm-up runs...
+Warm-up 1/2
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Warm-up 2/2
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+Running 5 measured runs...
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Run 1/5: TTFT=25.17 ms | Decode=48.19 tok/s | VRAM=15.29 GiB | RAM=1.58 GiB
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Run 2/5: TTFT=25.08 ms | Decode=48.16 tok/s | VRAM=15.29 GiB | RAM=1.58 GiB
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Run 3/5: TTFT=25.06 ms | Decode=47.97 tok/s | VRAM=15.29 GiB | RAM=1.58 GiB
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Run 4/5: TTFT=25.18 ms | Decode=48.10 tok/s | VRAM=15.29 GiB | RAM=1.58 GiB
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Run 5/5: TTFT=25.31 ms | Decode=47.96 tok/s | VRAM=15.29 GiB | RAM=1.58 GiB
+
+==============================================
+Qwen3-8B BASELINE PERFORMANCE SUMMARY
+==============================================
+Average TTFT: 25.16 ms
+Average decode speed: 48.07 tokens/s
+Average end-to-end speed: 48.00 tokens/s
+Average peak VRAM allocated: 15.29 GiB
+Average peak VRAM reserved: 15.45 GiB
+Average peak RAM: 1.58 GiB
+Model directory size: 15.27 GiB
+Weight size: 15.26 GiB
+
+Results saved to: /workspace/results/baseline/performance.json
