@@ -1,0 +1,29 @@
+{
+  "/workspace/models/anybcq-qwen3-8b": {
+    "ppl": {
+      "c4_new:2-bit": 35.58539962768555,
+      "c4_new:3-bit": 18.581966400146484,
+      "c4_new:4-bit": 16.845352172851562,
+      "wikitext2:2-bit": 40.97107696533203,
+      "wikitext2:3-bit": 12.95222282409668,
+      "wikitext2:4-bit": 10.823081016540527
+    }
+  },
+  "lm-eval": {
+    "mmlu:2-bit": {
+      "acc,none": 0.3374875373878365,
+      "acc_stderr,none": 0.003956242771665203,
+      "alias": "mmlu"
+    },
+    "mmlu:3-bit": {
+      "acc,none": 0.6656459193847031,
+      "acc_stderr,none": 0.0037882058716370744,
+      "alias": "mmlu"
+    },
+    "mmlu:4-bit": {
+      "acc,none": 0.7048141290414471,
+      "acc_stderr,none": 0.0036566955136987356,
+      "alias": "mmlu"
+    }
+  }
+}
