@@ -13,7 +13,7 @@ envs/
 .cache/
 huggingface/
 
-# Models / checkpoints - NEVER commit
+# Model artifacts
 models/
 checkpoints/
 *.safetensors
@@ -23,11 +23,24 @@ checkpoints/
 *.ckpt
 *.gguf
 
-# Large/local datasets
+# Local datasets
 datasets/
 
-# Editor / OS
+# Editor and OS files
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Credentials and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
