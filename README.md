@@ -1,6 +1,6 @@
 # Qwen3-8B Compression Experiments
 
-> **This is the single README for this project.** It lives on `main` only and is the entry point for anyone arriving from the paper. Feature branches do not carry a duplicate copy of this file.
+> **This is the central README for this project.** The `main` branch is the entry point for anyone arriving from the paper; method-specific branches may contain their own documentation.
 
 Companion repository for the paper:
 
@@ -18,12 +18,12 @@ If you want to check a number or reproduce a run, start here. Do not treat `orig
 |---|---|---|---|
 | Baseline | Uncompressed BF16 | Qwen3-8B, thinking off | `main`, `feature/baseline-kpis` |
 | AnyBCQ | Weight PTQ | 4 / 3 / 2-bit, C4 calibration, 256 samples | `feature/anybcq` |
-| AWQ | Weight PTQ | W4A16 asymmetric, WikiText-2-raw-v1, 128 samples | `feature/AWQ-Wanda` |
-| Wanda | Unstructured pruning | 50% sparsity, WikiText-2-raw-v1, 128 samples | `feature/AWQ-Wanda` |
+| AWQ | Weight PTQ | W4A16 asymmetric, WikiText-2-raw-v1, 128 samples | `feature/awq` |
+| Wanda | Unstructured pruning | 50% sparsity, WikiText-2-raw-v1, 128 samples | `feature/wanda` |
 | TurboQuant | KV-cache quantization | 3-bit, `hackimov/turboquant-kv`, seed 42 | `feature/turboquant` |
 | AnyBCQ + Wanda | Combined (exploratory) | Wanda 50% then AnyBCQ 4-bit | `feature/anybcq-wanda` |
 
-Related follow-ups (not in the main comparison tables): `feature/sparse-wanda`, `feature/sparse-kernel-wanda`.
+Related follow-up work (not in the main comparison tables): `feature/sparse-wanda`, `feature/sparse-kernel-wanda` (not present among the released branches).
 
 Common experimental constants:
 
@@ -90,7 +90,7 @@ Do **not** install every method into one virtualenv. The paper's Table 2 lists t
 | Wanda | 3.12.3 | 2.13.0 | 5.14.1 | 4.8.5 | llmcompressor 0.13.0 |
 | TurboQuant | 3.12.3 | 2.8.0+cu128 | 5.x (setup script currently pins 5.15.1) | 4.8.5 | lm-eval 0.4.12, Triton kernels |
 
-Snapshots: `requirements-lock.txt` (baseline, on `main`), `requirements-awq.txt` and `requirements-wanda.txt` (on `feature/AWQ-Wanda`).
+Snapshots: `requirements-lock.txt` (baseline, on `main`), `requirements-awq.txt` (on `feature/awq`) and `requirements-wanda.txt` (on `feature/wanda`).
 
 ### Upstream pins
 
@@ -183,16 +183,16 @@ python scripts/baseline/measure_performance.py
 
 ## AWQ and Wanda
 
-On `feature/AWQ-Wanda`, create **separate** environments from the committed snapshots; do not reuse the baseline env.
+Use **separate** environments from the committed snapshots on `feature/awq` and `feature/wanda`; do not reuse the baseline env.
 
 ```bash
-git checkout feature/AWQ-Wanda
+git checkout feature/awq
 # python -m venv ... && pip install -r requirements-awq.txt
 python scripts/awq/run_awq.py
 bash scripts/awq/run_awq_all.sh
 ```
 
-Wanda analogously: `requirements-wanda.txt`, `scripts/wanda/run_wanda.py`, `scripts/wanda/run_wanda_all.sh`.
+For Wanda, check out `feature/wanda` and use `requirements-wanda.txt`, `scripts/wanda/run_wanda.py`, and `scripts/wanda/run_wanda_all.sh`.
 
 AWQ and Wanda performance in the paper is **Hugging Face Transformers only**. There is no vLLM measurement in this repository.
 
@@ -243,7 +243,9 @@ These are remaining constraints of the supplementary package, not hidden experim
 
 ## License
 
-Internal R&D companion repository for Ai by DNA. Not an open-source release; contact the authors regarding reuse.
+Original code authored for this repository by Ai by DNA, across all branches, is licensed under the [Apache License, Version 2.0](https://github.com/Ai-by-DNA/qwen3-compression-rd/blob/main/LICENSE).
+
+Third-party code, implementations, dependencies, and datasets remain subject to their respective licenses. See [THIRD_PARTY_LICENSES.md](https://github.com/Ai-by-DNA/qwen3-compression-rd/blob/main/THIRD_PARTY_LICENSES.md) and [NOTICE](https://github.com/Ai-by-DNA/qwen3-compression-rd/blob/main/NOTICE) on the `main` branch for repository-wide licensing information and applicable notices. Preserve original copyright and license notices where required.
 
 ## Citation
 
