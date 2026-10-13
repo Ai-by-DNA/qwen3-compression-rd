@@ -34,9 +34,9 @@ Versions below are taken from the committed `requirements-lock.txt`, `requiremen
 | scikit-learn | `1.9.0` | [scikit-learn/scikit-learn](https://github.com/scikit-learn/scikit-learn) | BSD-3-Clause |
 | psutil | `7.2.2` | [giampaolo/psutil](https://github.com/giampaolo/psutil) | BSD-3-Clause |
 | vLLM | AWQ requirements `0.27.1` | [vllm-project/vllm](https://github.com/vllm-project/vllm) | Apache-2.0 |
-| Matplotlib | Not pinned in the supplied requirements | [matplotlib/matplotlib](https://github.com/matplotlib/matplotlib) | Matplotlib License (PSF-based, BSD-compatible) |
+| Matplotlib | Base `3.10.7` (plot generation) | [matplotlib/matplotlib](https://github.com/matplotlib/matplotlib) | Matplotlib License (PSF-based, BSD-compatible) |
 
-The complete transitive dependency versions are recorded in the branch-specific requirements files. Package dependencies are installed separately and are **not** bundled with this source repository. Binary redistributions, including NVIDIA CUDA packages appearing in some requirements files, are subject to their respective vendor licenses and additional terms.
+The requirements files record the specified package versions for their respective environments; they do not necessarily lock every transitive dependency. In particular, Matplotlib dependencies may be resolved separately during installation. Package dependencies are installed separately and are **not** bundled with this source repository. Binary redistributions, including NVIDIA CUDA packages appearing in some requirements files, are subject to their respective vendor licenses and additional terms.
 
 ## Evaluation datasets
 
