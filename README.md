@@ -204,6 +204,12 @@ bash scripts/turboquant/setup_turboquant.sh
 bash scripts/turboquant/run_all_turboquant.sh
 ```
 
+For reproducible TurboQuant quality evaluation, use
+`scripts/turboquant/fixed_seed_quality_preflight.py`.
+
+This script uses a fixed quantizer seed (42) and evaluates
+10 WikiText-2, 5 MMLU (abstract_algebra), and 5 GSM8K samples.
+
 Quality numbers in the paper are a **small-sample screening** (10 WikiText-2, 5 MMLU abstract_algebra, 5 GSM8K), not a full benchmark. Long-context KV memory is measured by `scripts/turboquant/measure_long_context.py`.
 
 ## AnyBCQ + Wanda (combined)
